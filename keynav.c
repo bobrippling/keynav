@@ -1860,10 +1860,31 @@ int query_current_screen_xinerama() {
   int i = 0, dummyint;
   unsigned int dummyuint;
   int x, y;
-  Window dummywin;
+  Window w;
   Window root = viewports[0].root;
-  XQueryPointer(dpy, root, &dummywin, &dummywin,
-                &x, &y, &dummyint, &dummyint, &dummyuint);
+
+	/* defaults for x and y */
+	XQueryPointer(dpy, root, &w, &w,
+			&x, &y, &dummyint, &dummyint, &dummyuint);
+
+	/* attempt to change x and y based on focus */
+	XGetInputFocus(dpy, &w, &dummyint);
+	if(w != None) {
+		Window parent, dummy, *pdummy;
+		XWindowAttributes wa;
+
+		/* find top-level window containing current input focus */
+		while(XQueryTree(dpy, w, &dummy, &parent, &pdummy, &dummyint)){
+			if(parent == root || parent == PointerRoot || parent == None)
+				break;
+
+			w = parent;
+		}
+
+		/* find xinerama screen if we have a valid focus */
+		if(w != root && XGetWindowAttributes(dpy, w, &wa))
+			x = wa.x + wa.width, y = wa.y + wa.height;
+	}
 
   /* Figure which display the cursor is on */
   for (i = 0; i < nviewports; i++) {

@@ -1,6 +1,8 @@
 keynav
 ======
 
+(Fork changes: initial placement is based on focus, not the mouse position)
+
 Control the mouse with the keyboard.
 
 Please see http://www.semicomplete.com/projects/keynav
