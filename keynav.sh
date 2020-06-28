@@ -20,7 +20,7 @@ then usage
 fi
 
 xtest(){
-	xterm -e true
+	xset q >/dev/null
 	return $?
 }
 
