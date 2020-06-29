@@ -1,6 +1,12 @@
 #include <stdlib.h>
+#include <time.h>
 
 #include <xdo.h>
+
+static void move(xdo_t *xdo, int x, int y) {
+		xdo_move_mouse_relative(xdo, x, y);
+		XSync(xdo->xdpy, 0);
+}
 
 int main() {
 	const char *disp = getenv("DISPLAY");
@@ -10,16 +16,20 @@ int main() {
 		return 3;
 
 	xdo_t *xdo = xdo_new_with_opened_display(dpy, disp, False);
-
-	int dir = 1;
+	const struct timespec delay = {
+		.tv_nsec = 1000000 * 50, // 50ms
+	};
 
 	while(1){
-		xdo_move_mouse_relative(xdo, dir * 10, 0);
-		XSync(xdo->xdpy, 0);
+		move(xdo, 10, 0);
 
-		dir = -dir;
+		struct timespec delay2 = delay;
+		nanosleep(&delay2, NULL);
+
+		move(xdo, -10, 0);
+
 		sleep(5);
 	}
 
-  xdo_free(xdo);
+	xdo_free(xdo);
 }
