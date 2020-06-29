@@ -19,6 +19,12 @@ elif [ $# -ne 0 ]
 then usage
 fi
 
+if test -z "$DISPLAY"
+then
+	echo >&2 "$0: no \$DISPLAY"
+	exit 1
+fi
+
 xtest(){
 	xset q >/dev/null
 	return $?
